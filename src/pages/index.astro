@@ -1,0 +1,141 @@
+---
+import Base from '../layouts/Base.astro';
+import Fresco from '../components/Fresco.astro';
+import Beneath from '../components/Beneath.astro';
+import Transactions from '../components/Transactions.astro';
+import Research from '../components/Research.astro';
+import { site } from '../data/site';
+---
+<Base current="transactions">
+  <Fresco />
+  <Beneath />
+
+  <div class="view" data-view="surface">
+    <section class="surface">
+      <article>
+        <p class="eyebrow center">On the surface</p>
+        <h1>{site.surface.headline}</h1>
+        {site.surface.paragraphs.map((p, i) => <p class={i === 0 ? 'first' : ''}>{p}</p>)}
+      </article>
+    </section>
+    <Transactions />
+  </div>
+
+  <div class="view" data-view="research">
+    <Research />
+  </div>
+</Base>
+
+<style>
+  .surface { padding: clamp(64px, 9vw, 112px) 0 clamp(40px, 6vw, 72px); display: flex; justify-content: center; }
+  article { width: 100%; max-width: var(--measure); display: flex; flex-direction: column; gap: 18px; }
+  .center { text-align: center; }
+  h1 { margin: 0; text-align: center; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.1; }
+  article p:not(.eyebrow) { margin: 0; font-size: 21px; line-height: 1.75; text-wrap: pretty; }
+  .first::first-letter { float: left; font-family: var(--display); font-size: 80px; line-height: 0.8; padding: 6px 10px 0 0; color: var(--sinopia); }
+  .view { animation: flipin .7s ease both; }
+  :global(html.js) [data-view='research'] { display: none; }
+  :global(html.js.show-research) [data-view='research'] { display: block; }
+  :global(html.js.show-research) [data-view='surface'] { display: none; }
+</style>
+
+<script>
+  /**
+   * Controller for the fresco: which giornate are lifted, which block is open,
+   * and whether the page shows the surface (Transactions) or the research glossary.
+   */
+  const ids = ['neuroscience', 'mathematics', 'vita', 'engineering', 'cybernetics'];
+  const lifted = new Set<string>();
+  let sel: string | null = null;
+
+  const root = document.documentElement;
+  const patches = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-giornata]'));
+  const beneath = document.getElementById('beneath') as HTMLElement;
+  const blocks = Array.from(document.querySelectorAll<HTMLElement>('[data-block]'));
+  const liftAll = document.querySelector<HTMLButtonElement>('[data-lift-all]')!;
+  const navTx = document.querySelector<HTMLAnchorElement>('[data-nav="transactions"]');
+  const navRs = document.querySelector<HTMLAnchorElement>('[data-nav="research"]');
+  const nameOf = (id: string) => patches.find((p) => p.dataset.giornata === id)?.querySelector('.label')?.textContent ?? id;
+
+  const allLifted = () => ids.every((id) => lifted.has(id));
+
+  function scrollToId(id: string) {
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
+  }
+
+  function render() {
+    const all = allLifted();
+    for (const p of patches) {
+      const id = p.dataset.giornata!;
+      const on = lifted.has(id);
+      p.classList.toggle('is-lifted', on);
+      p.setAttribute('aria-pressed', String(on));
+      p.setAttribute('aria-label', (on ? 'Restore the fresco over ' : 'Lift the fresco to see the work beneath: ') + nameOf(id));
+    }
+    const showBlock = !!sel && lifted.has(sel) && !all;
+    beneath.hidden = !showBlock;
+    for (const b of blocks) b.hidden = b.dataset.block !== sel;
+    root.classList.toggle('show-research', all);
+    liftAll.textContent = all ? 'Lay all the plaster back' : 'Lift the whole fresco';
+    navTx?.setAttribute('aria-current', String(!all));
+    navRs?.setAttribute('aria-current', String(all));
+  }
+
+  function toggle(id: string) {
+    if (lifted.has(id)) {
+      lifted.delete(id);
+      if (sel === id) sel = ids.filter((x) => lifted.has(x)).pop() ?? null;
+    } else {
+      lifted.add(id);
+      sel = id;
+    }
+    render();
+  }
+
+  function openOnly(id: string) {
+    lifted.clear();
+    lifted.add(id);
+    sel = id;
+    render();
+    scrollToId('beneath');
+  }
+
+  function showResearch() {
+    ids.forEach((id) => lifted.add(id));
+    sel = null;
+    render();
+    scrollToId('research');
+  }
+
+  function showSurface(scrollTarget?: string) {
+    lifted.clear();
+    sel = null;
+    render();
+    if (scrollTarget) scrollToId(scrollTarget);
+  }
+
+  patches.forEach((p) => p.addEventListener('click', () => toggle(p.dataset.giornata!)));
+  liftAll.addEventListener('click', () => (allLifted() ? showSurface() : showResearch()));
+  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((b) => b.addEventListener('click', () => openOnly(b.dataset.open!)));
+  document.querySelectorAll<HTMLButtonElement>('[data-restore]').forEach((b) => b.addEventListener('click', () => toggle(b.dataset.restore!)));
+
+  // Header links work as in-page controls here, and as deep links from other pages.
+  function fromHash() {
+    const h = location.hash.replace('#', '');
+    if (h === 'research') showResearch();
+    else if (h === 'vita') openOnly('vita');
+    else if (h === 'transactions') showSurface('transactions');
+    else render();
+  }
+  document.querySelectorAll<HTMLAnchorElement>('[data-nav]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      const target = { transactions: 'transactions', research: 'research', cv: 'vita' }[a.dataset.nav as 'transactions' | 'research' | 'cv'];
+      if (!target) return;
+      e.preventDefault();
+      history.replaceState(null, '', '#' + target);
+      fromHash();
+    }),
+  );
+  window.addEventListener('hashchange', fromHash);
+  fromHash();
+</script>

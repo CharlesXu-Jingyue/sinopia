@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { url } from '../../data/url';
+
+export async function getStaticPaths() {
+  const items = await getCollection('transactions', ({ data }) => !data.draft);
+  return items.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const date = entry.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Base title={entry.data.title} description={entry.data.summary} current="transactions">
+  <article class="prose page">
+    <p class="eyebrow kind">{entry.data.kind === 'thesis' ? 'Literary thesis' : 'Philosophical essay'} · {date}</p>
+    <h1>{entry.data.title}</h1>
+    <p class="muted sum">{entry.data.summary}</p>
+    <Content />
+    <p class="back"><a href={url('/#transactions')}>← All transactions</a></p>
+  </article>
+</Base>
+
+<style>
+  .page { padding: clamp(48px, 7vw, 96px) 0; }
+  .kind { color: var(--sinopia); margin-bottom: 12px; }
+  .sum { margin-top: 0; }
+  .back { margin-top: 48px; font-size: 18px; font-style: italic; }
+</style>

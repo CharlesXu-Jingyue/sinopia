@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { work: CollectionEntry<'works'> }
+const { work } = Astro.props;
+import { url } from '../data/url';
+const href = url(work.data.href ?? `/works/${work.id}`);
+---
+<a class="card" href={href}>
+  <span class="thumb">{work.data.thumb ?? `[${work.data.kind}]`}</span>
+  <span class="body">
+    <span class="kind">{work.data.kind}</span>
+    <span class="title">{work.data.title}</span>
+    <span class="desc">{work.data.summary}</span>
+  </span>
+</a>
+
+<style>
+  .card { display: flex; flex-direction: column; background: rgba(240, 234, 222, 0.82); box-shadow: 0 1px 0 rgba(138, 52, 32, 0.35); text-decoration: none; color: var(--sinopia-text); transition: transform .3s ease, box-shadow .3s ease; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(60, 30, 14, 0.18); color: var(--sinopia-text); }
+  .thumb { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 10; border-bottom: 1px dashed rgba(138, 52, 32, 0.55); font-family: var(--hand); font-size: 26px; color: var(--sinopia); }
+  .body { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 16px; }
+  .kind { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--sinopia-deep); }
+  .title { font-family: var(--display); font-size: 23px; line-height: 1.2; }
+  .desc { font-size: 16px; line-height: 1.45; color: #4a2617; }
+</style>

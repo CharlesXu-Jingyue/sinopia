@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+import { url } from '../data/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Which header link to mark as current: 'transactions' | 'research' | undefined */
+  current?: string;
+}
+const { title, description = site.description, current } = Astro.props;
+const pageTitle = title ? `${title} · ${site.author}` : `${site.author} · ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(url('/images/og.jpg'), Astro.site)} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400&family=Nanum+Brush+Script&display=swap"
+    />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-head">
+        <a class="site-name" href={url('/')}>{site.author}</a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href={url('/#transactions')} data-nav="transactions" aria-current={current === 'transactions' ? 'true' : undefined}>Transactions</a>
+          <a href={url('/#research')} data-nav="research" aria-current={current === 'research' ? 'true' : undefined}>Research</a>
+          <a href={url('/#vita')} data-nav="cv">CV</a>
+        </nav>
+      </header>
+      <slot />
+      <footer class="site-foot">
+        <span>{site.affiliation}</span>
+        <div>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a href={site.github}>GitHub</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

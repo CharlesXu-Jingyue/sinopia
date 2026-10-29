@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { giornate } from '../../data/giornate';
+import { url } from '../../data/url';
+
+export async function getStaticPaths() {
+  const items = await getCollection('works', ({ data }) => !data.draft);
+  return items.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const g = giornate.find((x) => x.id === entry.data.giornata);
+---
+<Base title={entry.data.title} description={entry.data.summary} current="research">
+  <article class="prose page">
+    <p class="eyebrow kind">{g?.name} · {entry.data.kind} · {entry.data.date.getFullYear()}</p>
+    <h1>{entry.data.title}</h1>
+    <p class="muted sum">{entry.data.summary}</p>
+    {entry.data.href && <p><a href={url(entry.data.href)}>Open it →</a></p>}
+    <Content />
+    <p class="back"><a href={url('/#research')}>← All research</a></p>
+  </article>
+</Base>
+
+<style>
+  .page { padding: clamp(48px, 7vw, 96px) 0; }
+  .kind { color: var(--sinopia); margin-bottom: 12px; }
+  .sum { margin-top: 0; }
+  .back { margin-top: 48px; font-size: 18px; font-style: italic; }
+</style>

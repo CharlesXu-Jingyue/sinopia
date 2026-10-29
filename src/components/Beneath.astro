@@ -1,0 +1,93 @@
+---
+/**
+ * The blocks that open beneath the fresco, one per giornata.
+ * All are rendered at build time and hidden; the controller shows the selected one.
+ */
+import { getCollection, render } from 'astro:content';
+import { giornate } from '../data/giornate';
+import { vita } from '../data/vita';
+import { site } from '../data/site';
+import WorkCard from './WorkCard.astro';
+import { url } from '../data/url';
+
+const works = (await getCollection('works', ({ data }) => !data.draft && data.featured)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const journal = (await getCollection('journal', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const journalRendered = await Promise.all(journal.map(async (j) => ({ entry: j, ...(await render(j)) })));
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<section id="beneath" class="beneath" aria-label="Beneath the fresco" hidden>
+  <svg class="grain" aria-hidden="true"><filter id="arriccio"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="21" /><feColorMatrix type="saturate" values="0" /></filter><rect width="100%" height="100%" filter="url(#arriccio)" /></svg>
+
+  {giornate.map((g) => (
+    <div class="block" data-block={g.id} hidden>
+      <div class="top">
+        <p class="eyebrow">Beneath the plaster · {g.scene}</p>
+        <button class="ctl soft" type="button" data-restore={g.id}>Lay the plaster back</button>
+      </div>
+      <h2 class="hand">{g.name}</h2>
+      <p class="lede">{g.lede}</p>
+
+      {g.id === 'vita' ? (
+        <div class="vita" id="vita">
+          <div class="col">
+            {vita.portrait ? <img src={url(vita.portrait)} alt={`Portrait of ${site.author}`} class="portrait" /> : <div class="portrait ph">[portrait]</div>}
+            <p class="intro">{vita.intro}</p>
+          </div>
+          <div class="col">
+            <h3 class="eyebrow small">Curriculum vitae</h3>
+            {vita.cv.map((c) => (
+              <div class="cvrow"><span class="when">{c.when}</span><span>{c.what}</span></div>
+            ))}
+            <a class="pdf" href={url(site.cvPdf)}>Download the full CV (PDF)</a>
+          </div>
+          <div class="col">
+            <h3 class="eyebrow small">From the notebook</h3>
+            {journalRendered.map(({ entry, Content }) => (
+              <div class="note">
+                <span class="hand date">{fmt(entry.data.date)}</span>
+                <div class="notebody"><Content /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div class="cards">
+            {works.filter((w) => w.data.giornata === g.id).map((w) => <WorkCard work={w} />)}
+          </div>
+          {g.code && <pre class="code">{g.code}</pre>}
+        </>
+      )}
+    </div>
+  ))}
+</section>
+
+<style>
+  .beneath { position: relative; margin-top: 28px; padding: clamp(24px, 4vw, 48px); background-color: var(--arriccio); box-shadow: inset 0 0 0 1px rgba(138, 52, 32, 0.35); overflow: hidden; color: var(--sinopia-text); animation: flipin .6s ease both; }
+  .grain { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.2; }
+  .block { position: relative; }
+  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; }
+  .top .eyebrow { color: var(--sinopia-deep); }
+  .ctl.soft { background: rgba(233, 226, 212, 0.5); color: var(--sinopia-deep); }
+  .hand { font-family: var(--hand); font-weight: 400; color: #7e2f1b; }
+  h2.hand { margin: 6px 0 4px; font-size: clamp(46px, 5.6vw, 68px); line-height: 1; }
+  .lede { margin: 0 0 28px; max-width: 720px; font-size: 19px; font-style: italic; color: #4a2617; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 20px; }
+  .code { margin: 22px 0 0; padding: 14px 16px; overflow-x: auto; border: 1px solid rgba(138, 52, 32, 0.45); background: rgba(233, 226, 212, 0.45); font-family: var(--mono); font-size: 14px; line-height: 1.6; color: #4a1c0f; }
+  .vita { display: flex; flex-wrap: wrap; gap: 32px 48px; align-items: flex-start; }
+  .col { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .portrait { aspect-ratio: 4 / 5; max-width: 320px; width: 100%; object-fit: cover; }
+  .portrait.ph { display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(138, 52, 32, 0.6); background: rgba(240, 234, 222, 0.6); font-family: var(--hand); font-size: 28px; color: var(--sinopia); }
+  .intro { margin: 0; font-size: 19px; line-height: 1.65; }
+  .eyebrow.small { color: var(--sinopia-deep); margin-bottom: 4px; }
+  .cvrow { display: flex; gap: 16px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid rgba(138, 52, 32, 0.3); font-size: 18px; line-height: 1.45; }
+  .when { flex: 0 0 84px; font-size: 15px; font-style: italic; color: var(--sinopia-deep); }
+  .pdf { align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; font-style: italic; color: var(--sinopia-deep); }
+  .note { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid rgba(138, 52, 32, 0.5); }
+  .date { font-size: 24px; line-height: 1; }
+  .notebody :global(p) { margin: 0; font-size: 18px; line-height: 1.55; }
+</style>

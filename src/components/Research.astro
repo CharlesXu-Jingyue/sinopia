@@ -1,0 +1,59 @@
+---
+/** The research glossary: every work, grouped by giornata. Revealed when the whole fresco is lifted. */
+import { getCollection } from 'astro:content';
+import { giornate } from '../data/giornate';
+import { url } from '../data/url';
+
+const works = (await getCollection('works', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const groups = giornate
+  .filter((g) => g.id !== 'vita')
+  .map((g) => ({ g, items: works.filter((w) => w.data.giornata === g.id) }));
+---
+<section id="research" class="research">
+  <div class="intro">
+    <p class="eyebrow">Beneath the plaster</p>
+    <h1>Research, all together</h1>
+    <p class="muted">Every work behind the fresco, by giornata. Lay the plaster back to return to the surface.</p>
+  </div>
+  <div class="rule-head">
+    <h2 class="eyebrow">Research glossary</h2>
+    <button class="ctl plain" type="button" data-open="vita">Vita and CV ↑</button>
+  </div>
+  <div class="groups">
+    {groups.map(({ g, items }) => (
+      <div class="group">
+        <div class="ghead">
+          <h3>{g.name}</h3>
+          <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>
+        </div>
+        {items.length === 0 && <p class="muted">Nothing here yet.</p>}
+        {items.map((w) => (
+          <a class="item" href={url(w.data.href ?? `/works/${w.id}`)}>
+            <span class="kind">{w.data.kind}</span>
+            <span class="t">{w.data.title}</span>
+            <span class="muted y">{w.data.date.getFullYear()}</span>
+          </a>
+        ))}
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .research { padding: clamp(56px, 8vw, 96px) 0; display: flex; flex-direction: column; gap: 28px; }
+  .intro { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .intro .eyebrow { color: var(--sinopia); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.1; }
+  .intro .muted { margin: 0; max-width: 560px; font-style: normal; }
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr)); gap: 32px 64px; }
+  .group { display: flex; flex-direction: column; }
+  .ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; }
+  h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; }
+  .item { display: flex; gap: 16px; align-items: baseline; padding: 11px 6px; margin: 0 -6px; border-top: 1px solid rgba(42, 36, 32, 0.16); text-decoration: none; transition: background-color .25s ease; }
+  .item:hover { background-color: rgba(42, 36, 32, 0.04); }
+  .kind { flex: 0 0 110px; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sinopia); }
+  .t { flex: 1 1 auto; font-size: 18px; line-height: 1.4; }
+  .y { font-size: 15px; }
+</style>

@@ -1,0 +1,238 @@
+---
+import Base from '../../layouts/Base.astro';
+import { url } from '../../data/url';
+const P: [number, number][] = [[200, 140], [700, 140], [700, 420], [200, 420]];
+const names = ['I · NEUROSCIENCE', 'II · CONTROL THEORY', 'III · ENGINEERING', 'IV · ESSAYS'];
+---
+<Base title="A homeostat you can disturb" description="Four coupled units after W. Ross Ashby's homeostat, drawn in animal or machine notation." current="research">
+  <section class="head">
+    <p class="eyebrow">Cybernetics · toy model</p>
+    <h1>A homeostat you can disturb</h1>
+    <p class="muted">Four units, each wired to the others. Move across the panel or press Disturb, and watch the system find its balance again.</p>
+    <div class="switch" role="group" aria-label="Notation">
+      <button type="button" data-mode="animal" aria-pressed="true">Animal</button>
+      <button type="button" data-mode="machine" aria-pressed="false">Machine</button>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="The homeostat">
+    <div class="bar">
+      <span>Fig. 1 · four units, all-to-all · <span id="modeLabel">animal</span> notation</span>
+      <span class="steps"><span id="lamp" class="lamp" aria-hidden="true"></span>Uniselector steps: <span id="steps">0</span></span>
+    </div>
+    <div class="stage" id="stage">
+      <svg viewBox="0 0 900 560" aria-hidden="true">
+        <g id="animal">
+          <path id="pExc" fill="none" stroke="#2a2420" stroke-width="1.6" stroke-linecap="round" />
+          <path id="pInh" fill="none" stroke="#2a2420" stroke-width="1.6" stroke-linecap="round" opacity="0.55" />
+          <path id="pBouton" fill="#2a2420" />
+          <path id="pBar" fill="none" stroke="#2a2420" stroke-width="3" stroke-linecap="round" />
+        </g>
+        <g id="machine" opacity="0">
+          <path id="pPos" fill="none" stroke="#2a2420" stroke-width="1.6" />
+          <path id="pNeg" fill="none" stroke="#2a2420" stroke-width="1.6" stroke-dasharray="6 5" />
+          <path id="pHead" fill="#2a2420" />
+        </g>
+        <g stroke="#2a2420" stroke-width="2" fill="#f6f2e8">
+          {P.map(([x, y]) => <rect x={x - 70} y={y - 55} width="140" height="110" rx="4" />)}
+          <circle cx="450" cy="280" r="50" />
+        </g>
+        <g fill="none" stroke="#2a2420" stroke-width="1.2">
+          {P.map(([x, y]) => <path d={`M${x - 44} ${y + 20} A44 44 0 0 1 ${x + 44} ${y + 20}`} />)}
+        </g>
+        {P.map(([x, y], i) => <line id={`needle${i}`} x1={x} y1={y + 20} x2={x} y2={y - 18} stroke="#b8401c" stroke-width="2.4" stroke-linecap="round" />)}
+        <g fill="#2a2420">{P.map(([x, y]) => <circle cx={x} cy={y + 20} r="3.5" />)}</g>
+        <g font-family="IBM Plex Mono, Menlo, monospace" font-size="11.5" letter-spacing="1" text-anchor="middle" fill="#2a2420">
+          {P.map(([x, y], i) => <text x={x} y={y + 42}>{names[i]}</text>)}
+          <text x="450" y="352">CYBERNETICS</text>
+        </g>
+        <g id="centreAnimal" fill="none" stroke="#2a2420" stroke-width="1.3"><circle cx="450" cy="280" r="18" /><path d="M432 280 L418 270 M432 284 L416 292 M468 280 L484 270 M468 284 L482 294 M450 262 L450 248 M450 298 L450 312" /></g>
+        <g id="centreMachine" opacity="0"><circle cx="450" cy="280" r="22" fill="none" stroke="#2a2420" stroke-width="1.3" /><text x="450" y="288" text-anchor="middle" font-size="22" fill="#2a2420">Σ</text></g>
+      </svg>
+    </div>
+    <div class="bar foot">
+      <span class="muted">Move across the panel to disturb the nearest unit, or:</span>
+      <span class="btns">
+        <button type="button" class="ctl" id="disturb">Disturb</button>
+        <button type="button" class="ctl" id="eqBtn" aria-expanded="false">Show the equations</button>
+      </span>
+    </div>
+    <div class="eq" id="eq" hidden>
+      <div>
+        <p class="formula"><em>ẋ</em> = (<em>W</em> − <em>Λ</em>) <em>x</em> + <em>d</em>(<em>t</em>)</p>
+        <p><em>x</em>: the four needle deflections. <em>W</em>: the couplings between units, zero on the diagonal. <em>Λ</em>: each unit’s own damping, here 1. <em>d</em>(<em>t</em>): your disturbance.</p>
+        <p>When a needle passes ±1.6, that unit’s row of <em>W</em> is redrawn at random, as Ashby’s uniselectors did, until the whole system settles.</p>
+      </div>
+      <pre id="wText"></pre>
+    </div>
+  </section>
+
+  <figure class="scope">
+    <div class="screen">
+      <svg viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 30 L600 30 M0 60 L600 60 M0 90 L600 90 M100 0 L100 120 M200 0 L200 120 M300 0 L300 120 M400 0 L400 120 M500 0 L500 120" stroke="rgba(141,240,168,0.12)" stroke-width="0.6" vector-effect="non-scaling-stroke" />
+        <path id="trace" fill="none" stroke="#8df0a8" stroke-width="1.6" vector-effect="non-scaling-stroke" />
+      </svg>
+      <span id="scopeLabel">CH1 · membrane potential, unit I</span>
+    </div>
+    <figcaption class="muted" id="scopeCaption">A neuron in unit I fires faster as its needle swings.</figcaption>
+  </figure>
+
+  <p class="back"><a href={url('/#research')}>← All research</a></p>
+</Base>
+
+<style>
+  .head { padding: clamp(40px, 6vw, 72px) 0 24px; display: flex; flex-direction: column; gap: 10px; }
+  .head .eyebrow { color: var(--sinopia); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.1; }
+  .head .muted { margin: 0; max-width: 640px; font-style: normal; }
+  .switch { display: flex; align-self: flex-start; margin-top: 8px; border: 1.5px solid var(--ink); }
+  .switch button { min-height: 44px; padding: 0 20px; border: none; background: transparent; font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; color: var(--ink); }
+  .switch button + button { border-left: 1.5px solid var(--ink); }
+  .switch button[aria-pressed='true'] { background: var(--ink); color: var(--plaster); }
+  .panel { border: 1.5px solid var(--ink); background: #f6f2e8; }
+  .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px; padding: 10px 16px; border-bottom: 1.5px solid var(--ink); font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .bar.foot { border-bottom: none; border-top: 1.5px solid var(--ink); text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .steps { display: flex; align-items: center; gap: 10px; }
+  .lamp { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); background: #f6f2e8; transition: background-color .2s ease; }
+  .lamp.on { background: #e0542a; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stage { overflow-x: auto; }
+  .stage svg { display: block; width: 100%; min-width: 640px; height: auto; }
+  #animal, #machine, #centreAnimal, #centreMachine { transition: opacity .6s ease; }
+  .eq { display: flex; flex-wrap: wrap; gap: 20px 48px; padding: 20px 16px 24px; border-top: 1.5px solid var(--ink); background: #efe9dc; }
+  .eq[hidden] { display: none; }
+  .eq > div { flex: 1 1 340px; font-size: 17px; }
+  .formula { font-size: 24px; margin-top: 0; }
+  .eq pre { flex: 0 1 360px; margin: 0; padding: 12px 14px; border: 1px solid var(--ink); background: #f6f2e8; font-family: var(--mono); font-size: 14px; line-height: 1.6; overflow-x: auto; }
+  .scope { margin: 24px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .screen { position: relative; background: #0e1712; border: 1.5px solid var(--ink); box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6); }
+  .screen svg { display: block; width: 100%; height: clamp(110px, 14vw, 160px); filter: drop-shadow(0 0 2px rgba(141, 240, 168, 0.6)); }
+  #scopeLabel { position: absolute; left: 12px; top: 8px; font-family: var(--mono); font-size: 13px; color: #8df0a8; }
+  .back { margin: 40px 0 64px; font-style: italic; }
+</style>
+
+<script>
+  const P: [number, number][] = [[200, 140], [700, 140], [700, 420], [200, 420]];
+  const pairs: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 0], [0, 2], [1, 3]];
+  const W = [[0, 0.5, -0.4, 0.3], [-0.6, 0, 0.4, -0.2], [0.3, -0.5, 0, 0.6], [-0.4, 0.2, -0.5, 0]];
+  let x = [0.9, -0.7, 0.5, -0.8];
+  const hAnimal = new Array(300).fill(0);
+  const hMachine = new Array(300).fill(0);
+  let queue: number[] = [];
+  let steps = 0;
+  let lampUntil = 0;
+  let mode: 'animal' | 'machine' = 'animal';
+  const $ = (id: string) => document.getElementById(id)!;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function advance() {
+    const dt = 0.012;
+    for (let s = 0; s < 2; s++) {
+      const nx = x.slice();
+      for (let i = 0; i < 4; i++) {
+        let dx = -x[i];
+        for (let j = 0; j < 4; j++) if (j !== i) dx += W[i][j] * x[j];
+        nx[i] = x[i] + dt * dx;
+      }
+      x = nx;
+      for (let i = 0; i < 4; i++) {
+        if (Math.abs(x[i]) > 1.6) {
+          for (let j = 0; j < 4; j++) W[i][j] = j === i ? 0 : Math.round((Math.random() * 2.4 - 1.2) * 100) / 100;
+          x[i] = Math.sign(x[i]) * 1.2;
+          steps += 1;
+          lampUntil = performance.now() + 450;
+        }
+      }
+    }
+    const rate = 0.03 + 0.5 * Math.min(1, Math.abs(x[0]));
+    let v: number;
+    if (queue.length) v = queue.shift()!;
+    else if (Math.random() < rate) { queue = [-0.45, -0.25, -0.12, -0.05]; v = 1; }
+    else v = (Math.random() - 0.5) * 0.06;
+    hAnimal.push(v); hAnimal.shift();
+    hMachine.push(x[1] / 1.6); hMachine.shift();
+  }
+
+  function wires() {
+    const f = (n: number) => n.toFixed(1);
+    let pExc = '', pInh = '', pBouton = '', pBar = '', pPos = '', pNeg = '', pHead = '';
+    for (const [a, b] of pairs) {
+      for (const [from, to, side] of [[a, b, 1], [b, a, -1]] as [number, number, number][]) {
+        const [x1, y1] = P[from], [x2, y2] = P[to];
+        const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+        const px = -uy * 7 * side, py = ux * 7 * side;
+        const tExit = Math.min(Math.abs(ux) > 1e-6 ? 70 / Math.abs(ux) : 1e9, Math.abs(uy) > 1e-6 ? 55 / Math.abs(uy) : 1e9);
+        const sx = x1 + ux * (tExit + 2) + px, sy = y1 + uy * (tExit + 2) + py;
+        const ex = x2 - ux * (tExit + 8) + px, ey = y2 - uy * (tExit + 8) + py;
+        const seg = `M${f(sx)} ${f(sy)} L${f(ex)} ${f(ey)} `;
+        if (W[to][from] >= 0) {
+          pExc += seg; pPos += seg;
+          pBouton += `M${f(ex + 3.5)} ${f(ey)} A3.5 3.5 0 1 0 ${f(ex - 3.5)} ${f(ey)} A3.5 3.5 0 1 0 ${f(ex + 3.5)} ${f(ey)} `;
+        } else {
+          pInh += seg; pNeg += seg;
+          pBar += `M${f(ex - uy * 6)} ${f(ey + ux * 6)} L${f(ex + uy * 6)} ${f(ey - ux * 6)} `;
+        }
+        pHead += `M${f(ex + ux * 6)} ${f(ey + uy * 6)} L${f(ex - uy * 4)} ${f(ey + ux * 4)} L${f(ex + uy * 4)} ${f(ey - ux * 4)} Z `;
+      }
+    }
+    const set = (id: string, d: string) => $(id).setAttribute('d', d);
+    set('pExc', pExc); set('pInh', pInh); set('pBouton', pBouton); set('pBar', pBar);
+    set('pPos', pPos); set('pNeg', pNeg); set('pHead', pHead);
+  }
+
+  function draw() {
+    P.forEach(([px, py], i) => {
+      const a = Math.max(-70, Math.min(70, x[i] * 44));
+      $(`needle${i}`).setAttribute('transform', `rotate(${a.toFixed(2)} ${px} ${py + 20})`);
+    });
+    wires();
+    const hist = mode === 'animal' ? hAnimal : hMachine;
+    $('trace').setAttribute('d', hist.map((v, i) => `${i ? 'L' : 'M'}${i * 2} ${(60 - v * 48).toFixed(1)}`).join(' '));
+    $('steps').textContent = String(steps);
+    $('lamp').classList.toggle('on', performance.now() < lampUntil);
+    $('wText').textContent = W.map((r) => r.map((n) => (n >= 0 ? ' ' : '') + n.toFixed(2)).join('  ')).join('\n');
+  }
+
+  function kick(i: number, amount: number) {
+    x[i] = Math.max(-1.7, Math.min(1.7, x[i] + amount));
+    if (reduce) draw();
+  }
+
+  function setMode(m: 'animal' | 'machine') {
+    mode = m;
+    const animal = m === 'animal';
+    $('animal').setAttribute('opacity', animal ? '1' : '0');
+    $('machine').setAttribute('opacity', animal ? '0' : '1');
+    $('centreAnimal').setAttribute('opacity', animal ? '1' : '0');
+    $('centreMachine').setAttribute('opacity', animal ? '0' : '1');
+    $('modeLabel').textContent = m;
+    $('scopeLabel').textContent = animal ? 'CH1 · membrane potential, unit I' : 'CH1 · x₂(t), unit II';
+    $('scopeCaption').textContent = animal ? 'A neuron in unit I fires faster as its needle swings.' : 'The control unit’s state, settling after each disturbance.';
+    document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+    draw();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode as 'animal' | 'machine')));
+  $('disturb').addEventListener('click', () => { for (let i = 0; i < 4; i++) kick(i, (Math.random() * 2 - 1) * 1.1); });
+  $('eqBtn').addEventListener('click', () => {
+    const eq = $('eq');
+    eq.hidden = !eq.hidden;
+    $('eqBtn').setAttribute('aria-expanded', String(!eq.hidden));
+    $('eqBtn').textContent = eq.hidden ? 'Show the equations' : 'Hide the equations';
+  });
+  $('stage').addEventListener('mousemove', (e) => {
+    const svg = ($('stage').querySelector('svg') as SVGSVGElement).getBoundingClientRect();
+    const mx = ((e.clientX - svg.left) / svg.width) * 900, my = ((e.clientY - svg.top) / svg.height) * 560;
+    let best = 0, bd = Infinity;
+    P.forEach(([px, py], i) => { const d2 = (px - mx) ** 2 + (py - my) ** 2; if (d2 < bd) { bd = d2; best = i; } });
+    const sp = Math.min(0.06, (Math.abs(e.movementX) + Math.abs(e.movementY)) * 0.004);
+    if (sp > 0) kick(best, sp * (Math.random() < 0.5 ? -1 : 1));
+  });
+
+  setMode('animal');
+  if (!reduce) {
+    const loop = () => { advance(); draw(); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+</script>

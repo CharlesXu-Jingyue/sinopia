@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import { url } from '../data/url';
+const items = (await getCollection('transactions', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+<section id="transactions" class="transactions">
+  <div class="rule-head">
+    <h2 class="eyebrow">Transactions</h2>
+    <span class="muted">Literary theses and philosophical essays</span>
+  </div>
+  {items.map((t) => (
+    <a class="row" href={url(`/transactions/${t.id}`)}>
+      <span class="kind">{t.data.kind}</span>
+      <span class="main">
+        <span class="title">{t.data.title}</span>
+        <span class="sum">{t.data.summary}</span>
+      </span>
+      <span class="muted year">{t.data.date.getFullYear()}</span>
+    </a>
+  ))}
+</section>
+
+<style>
+  .transactions { padding-bottom: clamp(56px, 8vw, 96px); display: flex; flex-direction: column; }
+  .kind { flex: 0 0 90px; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sinopia); }
+  .main { flex: 1 1 380px; display: flex; flex-direction: column; gap: 2px; }
+  .title { font-family: var(--display); font-style: italic; font-size: 26px; line-height: 1.2; }
+  .sum { font-size: 16px; color: var(--ink-soft); }
+  .year { font-size: 15px; }
+</style>
