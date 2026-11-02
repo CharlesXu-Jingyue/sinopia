@@ -116,9 +116,17 @@ import { site } from '../data/site';
     requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
   }
 
-  /** Bring the eyebrow ("The Fresco" or "The Sinopia") of a side to the middle of the window. */
-  function centerHead(id: string) {
-    requestAnimationFrame(() => document.getElementById(id)?.querySelector('[data-anchor]')?.scrollIntoView({ block: 'center' }));
+  /** Bring the eyebrow ("The Fresco" or "The Sinopia") of a side to the top, just under the header strip. */
+  function headToTop(id: string) {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id)?.querySelector<HTMLElement>('[data-anchor]');
+      if (!el) return;
+      // Measure the layout position (offsetTop ignores the flip-in transform still running).
+      let y = 0;
+      for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
+      const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      window.scrollTo({ top: Math.max(0, y - pad) });
+    });
   }
 
   function render() {
@@ -162,14 +170,14 @@ import { site } from '../data/site';
     ids.forEach((id) => lifted.add(id));
     sel = null;
     render();
-    centerHead('research');
+    headToTop('research');
   }
 
   function showSurface(scrollTarget?: string) {
     lifted.clear();
     sel = null;
     render();
-    if (scrollTarget === 'fresco-head') centerHead('fresco-head');
+    if (scrollTarget === 'fresco-head') headToTop('fresco-head');
     else if (scrollTarget) scrollToId(scrollTarget);
   }
 

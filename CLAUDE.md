@@ -63,7 +63,7 @@ public/images/fresco.webp, sinopia.webp   the paired images (sinopia is register
 ## Rules to keep
 
 - First encounter is the fresco and the surface (central idea + Transactions). Research stays hidden until the whole fresco is lifted or Research is clicked.
-- Header: name on the left; Transactions, Research, CV on the right, in that order. It is a see-through strip pinned to the top (on narrow screens only the nav row stays pinned). Transactions and Research centre "The Fresco" or "The Sinopia" in the window.
+- Header: name on the left; Transactions, Research, CV on the right, in that order. It is a see-through strip pinned to the top (on narrow screens only the nav row stays pinned). Transactions and Research scroll "The Fresco" or "The Sinopia" to the top, just under the strip.
 - No numbers on the giornate. Hover (and keyboard focus) makes a giornata float slightly with a soft shadow and shows its name.
 - Seams are quiet hairlines, not heavy ridges.
 - Respect `prefers-reduced-motion`: no float, flip or animation.
