@@ -10,6 +10,7 @@ import { giornate } from '../../data/giornate';
 import { site } from '../../data/site';
 import { url } from '../../data/url';
 import { apaParts } from '../../data/apa';
+import { toys } from '../../components/toys';
 
 export async function getStaticPaths() {
   const items = await getCollection('works', ({ data }) => !data.draft);
@@ -25,6 +26,7 @@ const apa = isPub ? apaParts({ ...d, title: d.title }) : null;
 const myApa = (s: string) => s === 'Xu, J.';
 const linkHref = d.link ? url(d.link) : undefined;
 const hasBody = Boolean(entry.body && entry.body.trim());
+const Toy = d.toy ? toys[d.toy] : undefined;
 ---
 <Base title={d.title} description={d.description} current="research">
   <article class="page">
@@ -61,6 +63,8 @@ const hasBody = Boolean(entry.body && entry.body.trim());
     {!isPub && linkHref && (
       <div class="actions"><a class="btn" href={linkHref}>Open it →</a></div>
     )}
+
+    {Toy && <div class="embed"><Toy /></div>}
 
     {hasBody && <div class="body"><Content /></div>}
 
@@ -100,6 +104,8 @@ const hasBody = Boolean(entry.body && entry.body.trim());
   .abstract, .cite { margin-bottom: 36px; }
   .abstract h2, .cite h2 { margin: 0 0 10px; color: var(--ink-soft); }
   .abstract p { margin: 0; font-size: 19px; line-height: 1.75; text-wrap: pretty; }
+  /* An embedded model is given more width than the text column. */
+  .embed { width: min(1080px, calc(100vw - 2 * clamp(14px, 3vw, 40px))); margin: 8px 0 40px 50%; transform: translateX(-50%); }
   .body { font-size: 19px; line-height: 1.75; margin-bottom: 36px; }
   .ref { margin: 0; padding-left: 2em; text-indent: -2em; font-size: 17px; line-height: 1.65; overflow-wrap: anywhere; }
   .back { margin-top: 48px; font-size: 18px; font-style: italic; }

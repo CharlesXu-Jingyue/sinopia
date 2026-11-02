@@ -33,8 +33,10 @@ const works = defineCollection({
     giornata: z.enum(['neuroscience', 'mathematics', 'engineering', 'cybernetics', 'other']),
     /** Its role in relation to the fresco and the headline. One or two sentences. */
     description: z.string(),
-    /** An external page or a toy model, offered as a button on the item's page. */
+    /** An external page, offered as a button on the item's page. */
     link: z.string().optional(),
+    /** An interactive model embedded on the item's page; a name registered in src/components/toys/index.ts. */
+    toy: z.enum(['homeostat']).optional(),
     /** Shown in its giornata's block when the plaster is lifted. Keep to about one per giornata. */
     featured: z.boolean().default(false),
     /** Short label for the card's picture space in the block, until a real preview exists. */

@@ -46,16 +46,16 @@ src/components/Glossed.astro    renders a line of text, turning the words in ter
 src/components/Transactions.astro
 src/pages/index.astro           page assembly + the controller script (lift, open, flip)
 src/pages/transactions/[id].astro, src/pages/works/[id].astro   reading pages
-src/pages/toys/homeostat.astro  first toy model (Ashby homeostat, animal/machine notation)
+src/components/toys/            interactive models embedded on work pages (index.ts registers them; Homeostat.astro)
 public/images/fresco.webp, sinopia.webp   the paired images (sinopia is registered to the fresco)
 ```
 
 ## Common tasks
 
 - **Add an essay or thesis:** new Markdown file in `src/content/transactions/` with `title`, `kind`, `date`, `summary`.
-- **Add a work:** new file in `src/content/works/` with `title`, `category` (publication, talk, toy model, simulation, build, code, analysis, note, essay, reading notes), `date`, `giornata` (or `other` for work outside the four; listed last in the Giornata view, no block), and `description` (one or two sentences on its role in the investigation of the mind named in the headline). Optional: `link` (external page or toy), `featured: true` (shown in its giornata's block; keep about one per giornata), `thumb`, Markdown body (shown on its own page at `/works/<file name>`).
+- **Add a work:** new file in `src/content/works/` with `title`, `category` (publication, talk, toy model, simulation, build, code, analysis, note, essay, reading notes), `date`, `giornata` (or `other` for work outside the four; listed last in the Giornata view, no block), and `description` (one or two sentences on its role in the investigation of the mind named in the headline). Optional: `link` (external page), `toy` (an embedded model, see below), `featured: true` (shown in its giornata's block; keep about one per giornata), `thumb`, Markdown body (shown on its own page at `/works/<file name>`).
 - **Add a publication:** a work with `category: publication` plus `authors` (full names, in order), `venue`, `status`, `doi`, `abstract`, and optionally `volume`, `issue`, `pages`. The item page highlights Charles's name (names listed in `site.nameInAuthorLists`) and generates the APA reference (`src/data/apa.ts`).
-- **Add a toy model:** a page under `src/pages/toys/`, self-contained like `homeostat.astro`, plus a work entry with `category: toy model` and `link` pointing to it.
+- **Add a toy model:** a self-contained component in `src/components/toys/` like `Homeostat.astro`, registered in `src/components/toys/index.ts` and added to the `toy` enum in `src/content.config.ts`, plus a work entry with `category: toy model` and `toy: <name>`. The model is embedded on the work's own page; there is no separate toy page.
 - **Replace the fresco images:** keep the same composition; export both at higher resolution, register the sinopia to the fresco (see below), save as `public/images/fresco.webp` and `sinopia.webp`. If the pixel size changes, scale all polygon and seam points in `giornate.ts` by the same factor and update `IMAGE`.
 - **Register the sinopia to the fresco:** the sinopia must line up with the fresco or lifted patches look misaligned. Use OpenCV `findTransformECC` (affine) on blurred gradient-magnitude images of both, then `warpAffine` the sinopia. Check with a checkerboard strip comparison.
 - **Redraw a seam:** seams must follow the outlines of figure groups and never cut through a face, a hand or a key object. Neighbouring polygons share their edge points exactly; the five polygons tile the whole image.

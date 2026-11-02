@@ -1,19 +1,16 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { url } from '../../data/url';
+/**
+ * Toy model: four coupled units after W. Ross Ashby's homeostat, drawn in animal or machine notation.
+ * Embedded on its work page through `toy: homeostat` in src/content/works/cyber-homeostat.md.
+ */
 const P: [number, number][] = [[200, 140], [700, 140], [700, 420], [200, 420]];
 const names = ['I · NEUROSCIENCE', 'II · CONTROL THEORY', 'III · ENGINEERING', 'IV · ESSAYS'];
 ---
-<Base title="A homeostat you can disturb" description="Four coupled units after W. Ross Ashby's homeostat, drawn in animal or machine notation." current="research">
-  <section class="head">
-    <p class="eyebrow">Cybernetics · toy model</p>
-    <h1>A homeostat you can disturb</h1>
-    <p class="muted">Four units, each wired to the others. Move across the panel or press Disturb, and watch the system find its balance again.</p>
-    <div class="switch" role="group" aria-label="Notation">
-      <button type="button" data-mode="animal" aria-pressed="true">Animal</button>
-      <button type="button" data-mode="machine" aria-pressed="false">Machine</button>
-    </div>
-  </section>
+<div class="toy">
+  <div class="switch" role="group" aria-label="Notation">
+    <button type="button" data-mode="animal" aria-pressed="true">Animal</button>
+    <button type="button" data-mode="machine" aria-pressed="false">Machine</button>
+  </div>
 
   <section class="panel" aria-label="The homeostat">
     <div class="bar">
@@ -78,15 +75,11 @@ const names = ['I · NEUROSCIENCE', 'II · CONTROL THEORY', 'III · ENGINEERING'
     <figcaption class="muted" id="scopeCaption">A neuron in unit I fires faster as its needle swings.</figcaption>
   </figure>
 
-  <p class="back"><a href={url('/#research')}>← All research</a></p>
-</Base>
+</div>
 
 <style>
-  .head { padding: clamp(40px, 6vw, 72px) 0 24px; display: flex; flex-direction: column; gap: 10px; }
-  .head .eyebrow { color: var(--sinopia); }
-  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.1; }
-  .head .muted { margin: 0; max-width: 640px; font-style: normal; }
-  .switch { display: flex; align-self: flex-start; margin-top: 8px; border: 1.5px solid var(--ink); }
+  .toy { display: flex; flex-direction: column; gap: 14px; }
+  .switch { display: flex; align-self: flex-start; border: 1.5px solid var(--ink); }
   .switch button { min-height: 44px; padding: 0 20px; border: none; background: transparent; font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; color: var(--ink); }
   .switch button + button { border-left: 1.5px solid var(--ink); }
   .switch button[aria-pressed='true'] { background: var(--ink); color: var(--plaster); }
@@ -105,11 +98,10 @@ const names = ['I · NEUROSCIENCE', 'II · CONTROL THEORY', 'III · ENGINEERING'
   .eq > div { flex: 1 1 340px; font-size: 17px; }
   .formula { font-size: 24px; margin-top: 0; }
   .eq pre { flex: 0 1 360px; margin: 0; padding: 12px 14px; border: 1px solid var(--ink); background: #f6f2e8; font-family: var(--mono); font-size: 14px; line-height: 1.6; overflow-x: auto; }
-  .scope { margin: 24px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .scope { margin: 10px 0 0; display: flex; flex-direction: column; gap: 8px; }
   .screen { position: relative; background: #0e1712; border: 1.5px solid var(--ink); box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6); }
   .screen svg { display: block; width: 100%; height: clamp(110px, 14vw, 160px); filter: drop-shadow(0 0 2px rgba(141, 240, 168, 0.6)); }
   #scopeLabel { position: absolute; left: 12px; top: 8px; font-family: var(--mono); font-size: 13px; color: #8df0a8; }
-  .back { margin: 40px 0 64px; font-style: italic; }
 </style>
 
 <script>
