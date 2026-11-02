@@ -10,3 +10,7 @@ export const url = (path: string): string => {
   const clean = path.startsWith('/') ? path : '/' + path;
   return base + clean;
 };
+
+/** Attributes that open an external link (http or https) in a new tab. Spread onto <a>: {...newTab(href)}. */
+export const newTab = (href?: string) =>
+  href && /^https?:/.test(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {};

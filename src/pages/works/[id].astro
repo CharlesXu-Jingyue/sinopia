@@ -8,7 +8,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { giornate } from '../../data/giornate';
 import { site } from '../../data/site';
-import { url } from '../../data/url';
+import { url, newTab } from '../../data/url';
 import { apaParts } from '../../data/apa';
 import { toys } from '../../components/toys';
 
@@ -48,8 +48,8 @@ const Toy = d.toy ? toys[d.toy] : undefined;
           <em>{d.venue}</em>{d.status && <span> · {d.status}</span>}<span> · {d.date.getFullYear()}</span>
         </p>
         <div class="actions">
-          {apa?.doiUrl && <a class="btn" href={apa.doiUrl}>Read the paper ↗</a>}
-          {linkHref && linkHref !== apa?.doiUrl && <a class="btn ghost" href={linkHref}>Open ↗</a>}
+          {apa?.doiUrl && <a class="btn" href={apa.doiUrl} {...newTab(apa.doiUrl)}>Read the paper ↗</a>}
+          {linkHref && linkHref !== apa?.doiUrl && <a class="btn ghost" href={linkHref} {...newTab(linkHref)}>Open ↗</a>}
         </div>
         {d.abstract && (
           <section class="abstract">
@@ -61,7 +61,7 @@ const Toy = d.toy ? toys[d.toy] : undefined;
     )}
 
     {!isPub && linkHref && (
-      <div class="actions"><a class="btn" href={linkHref}>Open it →</a></div>
+      <div class="actions"><a class="btn" href={linkHref} {...newTab(linkHref)}>Open it →</a></div>
     )}
 
     {Toy && <div class="embed"><Toy /></div>}
@@ -79,7 +79,7 @@ const Toy = d.toy ? toys[d.toy] : undefined;
             </>
           ))}
           {' '}({apa.year}). {apa.title}. <em>{apa.venue}{apa.volume && `, ${apa.volume}`}</em>{apa.issue && `(${apa.issue})`}{apa.pages && `, ${apa.pages}`}.
-          {apa.doiUrl && <> <a href={apa.doiUrl}>{apa.doiUrl}</a></>}
+          {apa.doiUrl && <> <a href={apa.doiUrl} {...newTab(apa.doiUrl)}>{apa.doiUrl}</a></>}
         </p>
       </section>
     )}

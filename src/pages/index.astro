@@ -145,7 +145,20 @@ import { site } from '../data/site';
     liftAll.textContent = all ? 'Lay all the plaster back' : 'Lift the whole fresco';
     navTx?.setAttribute('aria-current', String(!all));
     navRs?.setAttribute('aria-current', String(all));
+    save();
   }
+
+  /*
+   * Remember the page's state (lifted giornate, open block, scroll position) in this history entry,
+   * so Back, Forward or a reload return to exactly where the reader was.
+   */
+  type Saved = { lifted: string[]; sel: string | null; y: number };
+  function save() {
+    history.replaceState({ ...(history.state ?? {}), sinopia: { lifted: [...lifted], sel, y: window.scrollY } }, '');
+  }
+  let saveTimer = 0;
+  window.addEventListener('scroll', () => { clearTimeout(saveTimer); saveTimer = window.setTimeout(save, 120); }, { passive: true });
+  window.addEventListener('pagehide', save);
 
   function toggle(id: string) {
     if (lifted.has(id)) {
@@ -199,10 +212,24 @@ import { site } from '../data/site';
       const target = { transactions: 'transactions', research: 'research', cv: 'vita' }[a.dataset.nav as 'transactions' | 'research' | 'cv'];
       if (!target) return;
       e.preventDefault();
-      history.replaceState(null, '', '#' + target);
+      history.replaceState(history.state, '', '#' + target);
       fromHash();
     }),
   );
   window.addEventListener('hashchange', fromHash);
-  fromHash();
+
+  // The page restores its own scroll position, after the fresco and glossary are back in place.
+  history.scrollRestoration = 'manual';
+  const navType = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type;
+  const saved = (history.state?.sinopia ?? null) as Saved | null;
+  if (saved && (navType === 'back_forward' || navType === 'reload')) {
+    saved.lifted.forEach((id) => lifted.add(id));
+    sel = saved.sel;
+    render();
+    const go = () => window.scrollTo({ top: saved.y, behavior: 'instant' as ScrollBehavior });
+    requestAnimationFrame(go);
+    document.fonts?.ready.then(() => requestAnimationFrame(go));
+  } else {
+    fromHash();
+  }
 </script>

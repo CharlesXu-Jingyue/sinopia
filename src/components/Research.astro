@@ -134,6 +134,10 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
   function arrange(mode: string) {
     for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.arrange === mode));
     for (const l of lists) l.hidden = l.dataset.arrangement !== mode;
+    // Remembered in this history entry, so Back returns to the same arrangement.
+    history.replaceState({ ...(history.state ?? {}), arrange: mode }, '');
   }
   buttons.forEach((b) => b.addEventListener('click', () => arrange(b.dataset.arrange!)));
+  const remembered = history.state?.arrange;
+  if (remembered && buttons.some((b) => b.dataset.arrange === remembered)) arrange(remembered);
 </script>

@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
-import { url } from '../data/url';
+import { url, newTab } from '../data/url';
 
 interface Props {
   title?: string;
@@ -53,12 +53,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <span class="affil">{site.affiliation}</span>
         <div class="foot-links">
           <a href={`mailto:${site.email}`}>{site.email}</a>
-          <a href={site.github}>GitHub</a>
-          <a href={site.scholar}>Google Scholar</a>
+          <a href={site.github} {...newTab(site.github)}>GitHub</a>
+          <a href={site.scholar} {...newTab(site.scholar)}>Google Scholar</a>
         </div>
       </div>
     </footer>
     <script>
+      // External links (also those written in Markdown) open in a new tab.
+      for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]')) {
+        if (a.host !== location.host) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      }
+
       // The header bar shows a hairline once the page has scrolled under it.
       const root = document.documentElement;
       const mark = () => root.classList.toggle('scrolled', window.scrollY > 4);
