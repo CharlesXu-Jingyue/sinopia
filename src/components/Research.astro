@@ -1,5 +1,9 @@
 ---
-/** The research glossary: every work, grouped by giornata. Revealed when the whole fresco is lifted. */
+/**
+ * The research glossary: every work in one column, revealed when the whole fresco is lifted.
+ * Three arrangements of the same list: by category (default, publications first),
+ * by giornata, or by date. All three are rendered at build time; a small script switches them.
+ */
 import { getCollection } from 'astro:content';
 import { giornate } from '../data/giornate';
 import { url } from '../data/url';
@@ -7,44 +11,125 @@ import { url } from '../data/url';
 const works = (await getCollection('works', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
-const groups = giornate
+
+/** Category order and headings. Publications come first; edit to reorder. */
+const categories: [string, string][] = [
+  ['publication', 'Publications'],
+  ['talk', 'Talks'],
+  ['toy model', 'Toy models'],
+  ['simulation', 'Simulations'],
+  ['build', 'Builds'],
+  ['code', 'Code'],
+  ['analysis', 'Analyses'],
+  ['note', 'Notes'],
+  ['essay', 'Essays'],
+  ['reading notes', 'Reading notes'],
+];
+const giornataName = (id: string) => giornate.find((g) => g.id === id)?.name ?? id;
+
+const byCategory = categories
+  .map(([kind, heading]) => ({ heading, items: works.filter((w) => w.data.kind === kind) }))
+  .filter((g) => g.items.length > 0);
+
+const byGiornata = giornate
   .filter((g) => g.id !== 'vita')
-  .map((g) => ({ g, items: works.filter((w) => w.data.giornata === g.id) }));
+  .map((g) => ({ id: g.id, heading: g.name, items: works.filter((w) => w.data.giornata === g.id) }));
+
+const years = [...new Set(works.map((w) => w.data.date.getFullYear()))].sort((a, b) => b - a);
+const byDate = years.map((y) => ({ heading: String(y), items: works.filter((w) => w.data.date.getFullYear() === y) }));
+
+const href = (w: (typeof works)[number]) => url(w.data.href ?? `/works/${w.id}`);
+const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
 ---
 <section id="research-glossary" class="research">
   <div class="rule-head">
     <h2 class="eyebrow">Research glossary</h2>
     <button class="ctl plain" type="button" data-open="vita">Vita and CV ↑</button>
   </div>
-  <div class="groups">
-    {groups.map(({ g, items }) => (
-      <div class="group">
-        <div class="ghead">
-          <h3>{g.name}</h3>
-          <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>
-        </div>
-        {items.length === 0 && <p class="muted">Nothing here yet.</p>}
-        {items.map((w) => (
-          <a class="item" href={url(w.data.href ?? `/works/${w.id}`)}>
-            <span class="kind">{w.data.kind}</span>
+
+  <div class="arrange" role="group" aria-label="Arrange the glossary by">
+    <span class="muted">Arrange by</span>
+    <button type="button" data-arrange="category" aria-pressed="true">Category</button>
+    <button type="button" data-arrange="giornata" aria-pressed="false">Giornata</button>
+    <button type="button" data-arrange="date" aria-pressed="false">Date</button>
+  </div>
+
+  <div class="list" data-arrangement="category">
+    {byCategory.map((g) => (
+      <section class="group">
+        <h3>{g.heading}</h3>
+        {g.items.map((w) => (
+          <a class="item" href={href(w)}>
             <span class="t">{w.data.title}</span>
-            <span class="muted y">{w.data.date.getFullYear()}</span>
+            <span class="meta">{giornataName(w.data.giornata)}</span>
+            <span class="y">{w.data.date.getFullYear()}</span>
           </a>
         ))}
-      </div>
+      </section>
+    ))}
+  </div>
+
+  <div class="list" data-arrangement="giornata" hidden>
+    {byGiornata.map((g) => (
+      <section class="group">
+        <div class="ghead">
+          <h3>{g.heading}</h3>
+          <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>
+        </div>
+        {g.items.length === 0 && <p class="muted empty">Nothing here yet.</p>}
+        {g.items.map((w) => (
+          <a class="item" href={href(w)}>
+            <span class="t">{w.data.title}</span>
+            <span class="meta">{w.data.kind}</span>
+            <span class="y">{w.data.date.getFullYear()}</span>
+          </a>
+        ))}
+      </section>
+    ))}
+  </div>
+
+  <div class="list" data-arrangement="date" hidden>
+    {byDate.map((g) => (
+      <section class="group">
+        <h3>{g.heading}</h3>
+        {g.items.map((w) => (
+          <a class="item" href={href(w)}>
+            <span class="t">{w.data.title}</span>
+            <span class="meta">{w.data.kind} · {giornataName(w.data.giornata)}</span>
+            <span class="y">{month(w.data.date)}</span>
+          </a>
+        ))}
+      </section>
     ))}
   </div>
 </section>
 
 <style>
-  .research { padding-bottom: clamp(56px, 8vw, 96px); display: flex; flex-direction: column; gap: 28px; }
-  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr)); gap: 32px 64px; }
+  .research { padding-bottom: clamp(56px, 8vw, 96px); display: flex; flex-direction: column; gap: 22px; }
+  .arrange { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: -6px; font-size: 15px; }
+  .arrange .muted { margin-right: 6px; }
+  .arrange button { min-height: 44px; padding: 0 12px; border: none; border-bottom: 1px solid transparent; background: transparent; color: var(--ink-soft); font-family: var(--serif); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; }
+  .arrange button:hover { color: var(--ink); }
+  .arrange button[aria-pressed='true'] { color: var(--sinopia); border-bottom-color: var(--sinopia); }
+  .list { display: flex; flex-direction: column; gap: 36px; animation: flipin .5s ease both; }
+  .list[hidden] { display: none; }
   .group { display: flex; flex-direction: column; }
-  .ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; }
-  h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; }
-  .item { display: flex; gap: 16px; align-items: baseline; padding: 11px 6px; margin: 0 -6px; border-top: 1px solid rgba(42, 36, 32, 0.16); text-decoration: none; transition: background-color .25s ease; }
+  .ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  h3 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: 28px; }
+  .item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 24px; padding: 12px 6px; margin: 0 -6px; border-top: 1px solid rgba(42, 36, 32, 0.16); text-decoration: none; transition: background-color .25s ease; }
   .item:hover { background-color: rgba(42, 36, 32, 0.04); }
-  .kind { flex: 0 0 110px; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sinopia); }
-  .t { flex: 1 1 auto; font-size: 18px; line-height: 1.4; }
-  .y { font-size: 15px; }
+  .t { flex: 1 1 360px; min-width: 0; font-size: 19px; line-height: 1.4; }
+  .meta { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sinopia); }
+  .y { flex: 0 0 52px; text-align: right; font-size: 15px; font-style: italic; color: var(--ink-soft); }
+  .empty { margin: 0; padding: 12px 0; border-top: 1px solid rgba(42, 36, 32, 0.16); }
 </style>
+
+<script>
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-arrange]'));
+  const lists = Array.from(document.querySelectorAll<HTMLElement>('[data-arrangement]'));
+  function arrange(mode: string) {
+    for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.arrange === mode));
+    for (const l of lists) l.hidden = l.dataset.arrangement !== mode;
+  }
+  buttons.forEach((b) => b.addEventListener('click', () => arrange(b.dataset.arrange!)));
+</script>
