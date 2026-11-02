@@ -20,8 +20,16 @@ import { site } from '../data/site';
           <>
             <span class="ornament" aria-hidden="true">· · ·</span>
             <div class="gloss">
+              {site.surface.paragraphs.map((p, i) => (
+                <p class={i === 0 ? 'first' : ''}>
+                  {p.split('[^1]').map((part, j) => (
+                    <>{j > 0 && <sup class="fnref"><a id="fnref-1" href="#fn-1" aria-label="Footnote 1">1</a></sup>}{part}</>
+                  ))}
+                </p>
+              ))}
               {site.surface.definition && (
-                <p class="entry">
+                <p class="entry" id="fn-1">
+                  <a class="fnmark" href="#fnref-1" aria-label="Back to the text">1</a>
                   <dfn class="headword">{site.surface.definition.headword}</dfn>
                   <span class="ipa">{site.surface.definition.pronunciation}</span>
                   <span class="pos">{site.surface.definition.partOfSpeech}.</span>
@@ -29,7 +37,6 @@ import { site } from '../data/site';
                   <span class="origin">[{site.surface.definition.origin}]</span>
                 </p>
               )}
-              {site.surface.paragraphs.map((p) => <p>{p}</p>)}
             </div>
           </>
         )}
@@ -54,12 +61,20 @@ import { site } from '../data/site';
   /* On a computer screen the headline holds to one line. */
   @media (min-width: 1100px) { h1 { white-space: nowrap; } }
   .gloss p { margin: 0; font-size: 19px; line-height: 1.75; text-wrap: pretty; }
-  .entry { padding-bottom: 14px; border-bottom: 1px solid rgba(42, 36, 32, 0.22); }
-  .headword { font-family: var(--display); font-style: normal; font-weight: 500; font-size: 27px; letter-spacing: 0.01em; color: var(--sinopia); }
-  .ipa { margin-left: 10px; font-size: 18px; color: var(--ink-soft); }
-  .pos { margin-left: 10px; font-style: italic; }
-  .sense { margin-left: 6px; }
-  .origin { display: block; margin-top: 2px; font-size: 16px; color: var(--ink-soft); }
+  .first::first-letter { float: left; font-family: var(--display); font-size: 64px; line-height: 0.8; padding: 6px 8px 0 0; color: var(--sinopia); }
+  /* The definition hangs under the explanation like a footnote. */
+  .gloss p.entry { position: relative; margin-top: 10px; padding-top: 14px; font-size: 16px; line-height: 1.6; color: var(--ink-soft); }
+  .entry::before { content: ''; position: absolute; top: 0; left: 0; width: 120px; border-top: 1px solid rgba(42, 36, 32, 0.35); }
+  .fnref { margin-left: 1px; font-size: 0.62em; line-height: 0; }
+  .fnref a, .fnmark { color: var(--sinopia); text-decoration: none; font-family: var(--serif); }
+  .fnref a:hover, .fnmark:hover { text-decoration: underline; }
+  .fnmark { margin-right: 8px; font-size: 13px; vertical-align: super; line-height: 0; }
+  .entry:target { background: rgba(138, 52, 32, 0.06); }
+  .headword { font-family: var(--display); font-style: normal; font-weight: 500; font-size: 21px; letter-spacing: 0.01em; color: var(--sinopia); }
+  .ipa { margin-left: 8px; }
+  .pos { margin-left: 8px; font-style: italic; color: var(--ink); }
+  .sense { margin-left: 6px; color: var(--ink); }
+  .origin { display: block; margin-top: 2px; font-size: 15px; }
   .view { animation: flipin .7s ease both; }
   :global(html.js) [data-view='research'] { display: none; }
   :global(html.js.show-research) [data-view='research'] { display: block; }

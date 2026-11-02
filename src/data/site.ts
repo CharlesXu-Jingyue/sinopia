@@ -12,8 +12,9 @@ export const site = {
    * The central idea shown on the surface, under the fresco.
    * headline: the poetic line, large and italic.
    * response: the line that answers it, set smaller beneath it as the second half of a couplet.
-   * definition: a dictionary entry that opens the explanatory note (set to null to omit it).
-   * paragraphs: explanatory prose under the definition; leave the array empty to omit it.
+   * paragraphs: explanatory prose after the ornament; the first opens with a large red initial. Leave empty to omit.
+   *   Write [^1] in a paragraph where the footnote marker should appear.
+   * definition: a dictionary entry set under the prose like a footnote (set to null to omit it).
    */
   surface: {
     headline: 'A mind finds itself by growing into the world.',
@@ -26,7 +27,7 @@ export const site = {
       origin: 'From Greek kybernḗtēs, “steersman”; named by Norbert Wiener in 1948.',
     },
     paragraphs: [
-      'Cybernetics treats a mind less as a thing than as a loop: it acts on the world, senses the consequences of its actions, and corrects itself in turn. The brain thereby becomes something that can be modelled, perturbed and, in principle, rebuilt; to understand it is to rewire the loop and observe what changes.',
+      'Cybernetics[^1] treats a mind less as a thing than as a loop: it acts on the world, senses the consequences of its actions, and corrects itself in turn. The brain thereby becomes something that can be modelled, perturbed and, in principle, rebuilt; to understand it is to rewire the loop and observe what changes.',
     ],
   },
 };
