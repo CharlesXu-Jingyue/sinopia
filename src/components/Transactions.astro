@@ -8,7 +8,6 @@ const items = (await getCollection('transactions', ({ data }) => !data.draft)).s
 <section id="transactions" class="transactions">
   <div class="rule-head">
     <h2 class="eyebrow">Transactions</h2>
-    <span class="muted">Literary theses and philosophical essays</span>
   </div>
   {items.map((t) => (
     <a class="row" href={url(`/transactions/${t.id}`)}>

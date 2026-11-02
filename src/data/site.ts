@@ -10,9 +10,9 @@ export const site = {
   cvPdf: '/cv.pdf', // relative to the site; wrapped with url() where used
   /** The central idea shown on the surface, under the fresco. */
   surface: {
-    headline: '[The central idea, in one line]',
+    headline: 'A mind finds itself by growing into the world.',
     paragraphs: [
-      'The ideas you have consolidated and most want to communicate, in a few unhurried paragraphs. The fresco above is their picture; everything beneath it is the work they rest on.',
+      'And we understand it by rewiring its feedback loop with the world.',
     ],
   },
 };
