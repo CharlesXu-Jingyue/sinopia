@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:4321.
+Then open http://localhost:4321/sinopia/ (the site lives under `/sinopia/`, locally as on GitHub).
 
 ## Publish it on GitHub Pages
 

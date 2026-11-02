@@ -10,41 +10,47 @@ import { site } from '../data/site';
   <Fresco />
   <Beneath />
 
+  <section class="surface">
+    <article>
+      <div class="view head" data-view="surface">
+        <p class="eyebrow center">{site.surface.fresco.eyebrow}</p>
+        <h1>{site.surface.fresco.headline}</h1>
+      </div>
+      <div class="view head" data-view="research" id="research">
+        <p class="eyebrow center under">{site.surface.sinopia.eyebrow}</p>
+        <h1>{site.surface.sinopia.headline}</h1>
+      </div>
+
+      {(site.surface.definition || site.surface.paragraphs.length > 0) && (
+        <>
+          <span class="ornament" aria-hidden="true">· · ·</span>
+          <div class="gloss">
+            {site.surface.paragraphs.map((p, i) => (
+              <p class={i === 0 ? 'first' : ''}>
+                {p.split('[^1]').map((part, j) => (
+                  <>{j > 0 && <sup class="fnref"><a id="fnref-1" href="#fn-1" aria-label="Footnote 1">1</a></sup>}{part}</>
+                ))}
+              </p>
+            ))}
+            {site.surface.definition && (
+              <p class="entry" id="fn-1">
+                <a class="fnmark" href="#fnref-1" aria-label="Back to the text">1</a>
+                <dfn class="headword">{site.surface.definition.headword}</dfn>
+                <span class="ipa">{site.surface.definition.pronunciation}</span>
+                <span class="pos">{site.surface.definition.partOfSpeech}.</span>
+                <span class="sense">{site.surface.definition.sense}</span>
+                <span class="origin">[{site.surface.definition.origin}]</span>
+              </p>
+            )}
+          </div>
+        </>
+      )}
+    </article>
+  </section>
+
   <div class="view" data-view="surface">
-    <section class="surface">
-      <article>
-        <p class="eyebrow center">The Fresco</p>
-        <h1>{site.surface.headline}</h1>
-        {site.surface.response && <p class="response">{site.surface.response}</p>}
-        {(site.surface.definition || site.surface.paragraphs.length > 0) && (
-          <>
-            <span class="ornament" aria-hidden="true">· · ·</span>
-            <div class="gloss">
-              {site.surface.paragraphs.map((p, i) => (
-                <p class={i === 0 ? 'first' : ''}>
-                  {p.split('[^1]').map((part, j) => (
-                    <>{j > 0 && <sup class="fnref"><a id="fnref-1" href="#fn-1" aria-label="Footnote 1">1</a></sup>}{part}</>
-                  ))}
-                </p>
-              ))}
-              {site.surface.definition && (
-                <p class="entry" id="fn-1">
-                  <a class="fnmark" href="#fnref-1" aria-label="Back to the text">1</a>
-                  <dfn class="headword">{site.surface.definition.headword}</dfn>
-                  <span class="ipa">{site.surface.definition.pronunciation}</span>
-                  <span class="pos">{site.surface.definition.partOfSpeech}.</span>
-                  <span class="sense">{site.surface.definition.sense}</span>
-                  <span class="origin">[{site.surface.definition.origin}]</span>
-                </p>
-              )}
-            </div>
-          </>
-        )}
-      </article>
-    </section>
     <Transactions />
   </div>
-
   <div class="view" data-view="research">
     <Research />
   </div>
@@ -54,7 +60,11 @@ import { site } from '../data/site';
   .surface { padding: clamp(64px, 9vw, 112px) 0 clamp(40px, 6vw, 72px); display: flex; justify-content: center; }
   article { width: 100%; max-width: 1080px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .center { text-align: center; }
-  h1 { margin: 0; text-align: center; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.12; text-wrap: balance; }
+  /* Both headlines share one size and position, so the two sides mirror each other. */
+  .head { width: 100%; text-align: center; }
+  .eyebrow.under { color: var(--sinopia); }
+  h1 { margin: 0; text-align: center; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(30px, 3.7vw, 43px); line-height: 1.15; text-wrap: balance; }
+  .head h1 { margin-top: 18px; }
   .response { margin: -4px 0 0; text-align: center; font-family: var(--display); font-size: clamp(22px, 2.4vw, 28px); line-height: 1.35; color: var(--ink-soft); text-wrap: balance; }
   .ornament { margin-top: clamp(20px, 3vw, 32px); color: var(--sinopia); letter-spacing: 0.4em; font-size: 18px; }
   .gloss { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 16px; }

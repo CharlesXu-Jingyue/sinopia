@@ -11,12 +11,7 @@ const groups = giornate
   .filter((g) => g.id !== 'vita')
   .map((g) => ({ g, items: works.filter((w) => w.data.giornata === g.id) }));
 ---
-<section id="research" class="research">
-  <div class="intro">
-    <p class="eyebrow">Beneath the plaster</p>
-    <h1>Research, all together</h1>
-    <p class="muted">Every work behind the fresco, by giornata. Lay the plaster back to return to the surface.</p>
-  </div>
+<section id="research-glossary" class="research">
   <div class="rule-head">
     <h2 class="eyebrow">Research glossary</h2>
     <button class="ctl plain" type="button" data-open="vita">Vita and CV ↑</button>
@@ -42,11 +37,7 @@ const groups = giornate
 </section>
 
 <style>
-  .research { padding: clamp(56px, 8vw, 96px) 0; display: flex; flex-direction: column; gap: 28px; }
-  .intro { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-  .intro .eyebrow { color: var(--sinopia); }
-  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(36px, 4.6vw, 54px); line-height: 1.1; }
-  .intro .muted { margin: 0; max-width: 560px; font-style: normal; }
+  .research { padding-bottom: clamp(56px, 8vw, 96px); display: flex; flex-direction: column; gap: 28px; }
   .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr)); gap: 32px 64px; }
   .group { display: flex; flex-direction: column; }
   .ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; }
