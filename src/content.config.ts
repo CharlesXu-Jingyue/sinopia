@@ -29,7 +29,8 @@ const works = defineCollection({
     title: z.string(),
     category: z.enum(['publication', 'talk', 'toy model', 'simulation', 'build', 'code', 'analysis', 'note', 'essay', 'reading notes']),
     date: z.coerce.date(),
-    giornata: z.enum(['neuroscience', 'mathematics', 'engineering', 'cybernetics']),
+    /** 'other' is for work outside the four research giornate; it has no block under the fresco. */
+    giornata: z.enum(['neuroscience', 'mathematics', 'engineering', 'cybernetics', 'other']),
     /** Its role in relation to the fresco and the headline. One or two sentences. */
     description: z.string(),
     /** An external page or a toy model, offered as a button on the item's page. */

@@ -25,7 +25,7 @@ const categories: [string, string][] = [
   ['essay', 'Essays'],
   ['reading notes', 'Reading notes'],
 ];
-const giornataName = (id: string) => giornate.find((g) => g.id === id)?.name ?? id;
+const giornataName = (id: string) => giornate.find((g) => g.id === id)?.name ?? (id === 'other' ? 'Other' : id);
 
 const byCategory = categories
   .map(([kind, heading]) => ({ heading, items: works.filter((w) => w.data.category === kind) }))
@@ -33,7 +33,10 @@ const byCategory = categories
 
 const byGiornata = giornate
   .filter((g) => g.id !== 'vita')
-  .map((g) => ({ id: g.id, heading: g.name, items: works.filter((w) => w.data.giornata === g.id) }));
+  .map((g) => ({ id: g.id as string | undefined, heading: g.name, items: works.filter((w) => w.data.giornata === g.id) }));
+// Work outside the four giornate comes last, without a block to open.
+const others = works.filter((w) => w.data.giornata === 'other');
+if (others.length) byGiornata.push({ id: undefined, heading: 'Other', items: others });
 
 const years = [...new Set(works.map((w) => w.data.date.getFullYear()))].sort((a, b) => b - a);
 const byDate = years.map((y) => ({ heading: String(y), items: works.filter((w) => w.data.date.getFullYear() === y) }));
@@ -74,7 +77,7 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
       <section class="group">
         <div class="ghead">
           <h3>{g.heading}</h3>
-          <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>
+          {g.id && <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>}
         </div>
         {g.items.length === 0 && <p class="muted empty">Nothing here yet.</p>}
         {g.items.map((w) => (

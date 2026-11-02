@@ -28,7 +28,7 @@ const hasBody = Boolean(entry.body && entry.body.trim());
 ---
 <Base title={d.title} description={d.description} current="research">
   <article class="page">
-    <p class="eyebrow kind">{g?.name} · {d.category} · {d.date.getFullYear()}</p>
+    <p class="eyebrow kind">{g?.name ?? 'Other'} · {d.category} · {d.date.getFullYear()}</p>
 
     <p class="role">{d.description}</p>
     <h1>{d.title}</h1>

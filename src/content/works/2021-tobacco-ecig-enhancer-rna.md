@@ -2,7 +2,7 @@
 title: "Tobacco smoke and electronic cigarette vapor alter enhancer RNA expression that can regulate the pathogenesis of lung squamous cell carcinoma"
 category: publication
 date: 2021-08-23
-giornata: engineering
+giornata: other
 description: "[One or two sentences, in your words, on how this work fits the investigation of the mind.]"
 authors:
   - Joseph C. Tsai

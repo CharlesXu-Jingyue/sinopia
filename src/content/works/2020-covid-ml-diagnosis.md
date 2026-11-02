@@ -2,7 +2,7 @@
 title: "Using machine learning of clinical data to diagnose COVID-19: A systematic review and meta-analysis"
 category: publication
 date: 2020-09-29
-giornata: engineering
+giornata: other
 description: "[One or two sentences, in your words, on how this work fits the investigation of the mind.]"
 authors:
   - Wei Tse Li

@@ -2,7 +2,7 @@
 title: "Enhancer RNA profiling in smoking and HPV associated HNSCC reveals associations to key oncogenes"
 category: publication
 date: 2021-11-21
-giornata: engineering
+giornata: other
 description: "[One or two sentences, in your words, on how this work fits the investigation of the mind.]"
 authors:
   - Neil Shende
