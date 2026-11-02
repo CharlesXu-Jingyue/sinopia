@@ -6,6 +6,7 @@
  */
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import BackLink from '../../components/BackLink.astro';
 import { giornate } from '../../data/giornate';
 import { site } from '../../data/site';
 import { url, newTab } from '../../data/url';
@@ -30,6 +31,7 @@ const Toy = d.toy ? toys[d.toy] : undefined;
 ---
 <Base title={d.title} description={d.description} current="research">
   <article class="page">
+    <BackLink fallback={url('/#research')} />
     <p class="eyebrow kind">{g?.name ?? 'Other'} · {d.category} · {d.date.getFullYear()}</p>
 
     <p class="role">{d.description}</p>
@@ -84,12 +86,11 @@ const Toy = d.toy ? toys[d.toy] : undefined;
       </section>
     )}
 
-    <p class="back"><a href={url('/#research')}>← All research</a></p>
   </article>
 </Base>
 
 <style>
-  .page { max-width: 760px; margin: 0 auto; padding: clamp(48px, 7vw, 96px) 0; }
+  .page { max-width: 760px; margin: 0 auto; padding: clamp(20px, 3vw, 36px) 0 clamp(48px, 7vw, 96px); }
   .kind { color: var(--sinopia); margin: 0 0 18px; }
   .role { margin: 0 0 14px; font-size: 19px; line-height: 1.6; font-style: italic; color: var(--ink-soft); }
   h1 { margin: 0 0 18px; font-family: var(--display); font-weight: 400; font-size: clamp(32px, 4vw, 46px); line-height: 1.15; }
@@ -108,5 +109,4 @@ const Toy = d.toy ? toys[d.toy] : undefined;
   .embed { width: min(1080px, calc(100vw - 2 * clamp(14px, 3vw, 40px))); margin: 8px 0 40px 50%; transform: translateX(-50%); }
   .body { font-size: 19px; line-height: 1.75; margin-bottom: 36px; }
   .ref { margin: 0; padding-left: 2em; text-indent: -2em; font-size: 17px; line-height: 1.65; overflow-wrap: anywhere; }
-  .back { margin-top: 48px; font-size: 18px; font-style: italic; }
 </style>

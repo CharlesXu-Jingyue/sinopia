@@ -1,0 +1,31 @@
+---
+/**
+ * "← Back" at the top of a reading page. If the reader came from this site, it goes back in
+ * history, so the front page returns to the same giornate, glossary and scroll position.
+ * Otherwise (a shared link, a new tab) it goes to `fallback`.
+ */
+interface Props {
+  fallback: string;
+}
+const { fallback } = Astro.props;
+---
+<p class="back"><a href={fallback} data-back>← Back</a></p>
+
+<style>
+  .back { margin: 0 0 28px; font-size: 17px; font-style: italic; }
+  .back a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; color: var(--ink-soft); }
+  .back a:hover { color: var(--sinopia); text-decoration: underline; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-back]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      let sameSite = false;
+      try { sameSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch { /* no referrer */ }
+      if (sameSite && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    }),
+  );
+</script>
