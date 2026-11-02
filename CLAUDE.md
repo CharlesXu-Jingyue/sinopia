@@ -35,12 +35,14 @@ src/data/url.ts         url() helper that prefixes the base path
 src/data/site.ts        name, author, links, the central idea on the surface
 src/data/giornate.ts    the five giornate: polygons, seams, labels, ledes, code snippets
 src/data/vita.ts        introduction, portrait path, CV rows
+src/data/terms.ts       giornata, fresco, sinopia: dictionary entry + meaning on this site, shown in a hover/click card
 src/content/transactions/*.md   theses and essays (kind: thesis | essay)
 src/content/works/*.md          research works (giornata: neuroscience | mathematics | engineering | cybernetics)
 src/content/journal/*.md        short dated notes for the Vita block
 src/components/Fresco.astro     the fresco, giornate buttons, seams, hover float
 src/components/Beneath.astro    the block under the fresco for each giornata (cards, or Vita)
 src/components/Research.astro   the research glossary
+src/components/Glossed.astro    renders a line of text, turning the words in terms.ts into cards
 src/components/Transactions.astro
 src/pages/index.astro           page assembly + the controller script (lift, open, flip)
 src/pages/transactions/[id].astro, src/pages/works/[id].astro   reading pages
@@ -61,7 +63,7 @@ public/images/fresco.webp, sinopia.webp   the paired images (sinopia is register
 ## Rules to keep
 
 - First encounter is the fresco and the surface (central idea + Transactions). Research stays hidden until the whole fresco is lifted or Research is clicked.
-- Header: name on the left; Transactions, Research, CV on the right, in that order.
+- Header: name on the left; Transactions, Research, CV on the right, in that order. It is a see-through strip pinned to the top (on narrow screens only the nav row stays pinned). Transactions and Research centre "The Fresco" or "The Sinopia" in the window.
 - No numbers on the giornate. Hover (and keyboard focus) makes a giornata float slightly with a soft shadow and shows its name.
 - Seams are quiet hairlines, not heavy ridges.
 - Respect `prefers-reduced-motion`: no float, flip or animation.

@@ -4,6 +4,7 @@ import Fresco from '../components/Fresco.astro';
 import Beneath from '../components/Beneath.astro';
 import Transactions from '../components/Transactions.astro';
 import Research from '../components/Research.astro';
+import Glossed from '../components/Glossed.astro';
 import { site } from '../data/site';
 ---
 <Base current="transactions">
@@ -12,12 +13,12 @@ import { site } from '../data/site';
 
   <section class="surface">
     <article>
-      <div class="view head" data-view="surface">
-        <p class="eyebrow center">{site.surface.fresco.eyebrow}</p>
+      <div class="view head" data-view="surface" id="fresco-head">
+        <p class="eyebrow center" data-anchor><Glossed text={site.surface.fresco.eyebrow} /></p>
         <h1>{site.surface.fresco.headline}</h1>
       </div>
       <div class="view head" data-view="research" id="research">
-        <p class="eyebrow center under">{site.surface.sinopia.eyebrow}</p>
+        <p class="eyebrow center under" data-anchor><Glossed text={site.surface.sinopia.eyebrow} /></p>
         <h1>{site.surface.sinopia.headline}</h1>
       </div>
 
@@ -115,6 +116,11 @@ import { site } from '../data/site';
     requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
   }
 
+  /** Bring the eyebrow ("The Fresco" or "The Sinopia") of a side to the middle of the window. */
+  function centerHead(id: string) {
+    requestAnimationFrame(() => document.getElementById(id)?.querySelector('[data-anchor]')?.scrollIntoView({ block: 'center' }));
+  }
+
   function render() {
     const all = allLifted();
     for (const p of patches) {
@@ -156,14 +162,15 @@ import { site } from '../data/site';
     ids.forEach((id) => lifted.add(id));
     sel = null;
     render();
-    scrollToId('research');
+    centerHead('research');
   }
 
   function showSurface(scrollTarget?: string) {
     lifted.clear();
     sel = null;
     render();
-    if (scrollTarget) scrollToId(scrollTarget);
+    if (scrollTarget === 'fresco-head') centerHead('fresco-head');
+    else if (scrollTarget) scrollToId(scrollTarget);
   }
 
   patches.forEach((p) => p.addEventListener('click', () => toggle(p.dataset.giornata!)));
@@ -176,7 +183,7 @@ import { site } from '../data/site';
     const h = location.hash.replace('#', '');
     if (h === 'research') showResearch();
     else if (h === 'vita') openOnly('vita');
-    else if (h === 'transactions') showSurface('transactions');
+    else if (h === 'transactions') showSurface('fresco-head');
     else render();
   }
   document.querySelectorAll<HTMLAnchorElement>('[data-nav]').forEach((a) =>

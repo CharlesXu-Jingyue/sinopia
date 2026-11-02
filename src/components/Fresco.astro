@@ -4,6 +4,7 @@
  * the controller script in pages/index.astro toggles `.is-lifted` on it.
  */
 import { IMAGE, giornate, seams, clipPath, points } from '../data/giornate';
+import Glossed from './Glossed.astro';
 ---
 <figure class="fresco" id="top">
   <div class="mount">
@@ -32,7 +33,7 @@ import { IMAGE, giornate, seams, clipPath, points } from '../data/giornate';
     </div>
   </div>
   <figcaption>
-    <span class="muted">Lift a giornata to see the work behind.</span>
+    <span class="muted"><Glossed text="Lift a giornata to see the work behind." /></span>
     <button class="ctl" type="button" data-lift-all>Lift the whole fresco</button>
   </figcaption>
 </figure>

@@ -29,8 +29,11 @@ img { max-width: 100%; display: block; }
 .rule-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 24px; padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
 .muted { color: var(--ink-soft); font-style: italic; }
 
-/* Header */
-.site-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; padding: 22px 0 16px; }
+/* Header: a see-through strip that stays at the top while the page scrolls under it. */
+html { scroll-padding-top: 84px; }
+.site-bar { position: sticky; top: 0; z-index: 30; background: rgba(233, 226, 212, 0.86); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid transparent; transition: border-color .25s ease; }
+html.scrolled .site-bar { border-bottom-color: rgba(42, 36, 32, 0.25); }
+.site-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; padding: 16px clamp(14px, 3vw, 40px) 12px; }
 .site-name { font-family: var(--display); font-size: 24px; letter-spacing: 0.04em; text-decoration: none; }
 .site-nav { display: flex; flex-wrap: wrap; margin-right: -12px; }
 .site-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; }

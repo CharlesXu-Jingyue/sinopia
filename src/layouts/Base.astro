@@ -35,15 +35,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
-    <div class="wrap">
-      <header class="site-head">
+    <header class="site-bar">
+      <div class="wrap site-head">
         <a class="site-name" href={url('/')}>{site.author}</a>
         <nav class="site-nav" aria-label="Primary">
           <a href={url('/#transactions')} data-nav="transactions" aria-current={current === 'transactions' ? 'true' : undefined}>Transactions</a>
           <a href={url('/#research')} data-nav="research" aria-current={current === 'research' ? 'true' : undefined}>Research</a>
           <a href={url('/#vita')} data-nav="cv">CV</a>
         </nav>
-      </header>
+      </div>
+    </header>
+    <div class="wrap">
       <slot />
     </div>
     <footer class="site-foot">
@@ -56,5 +58,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
       </div>
     </footer>
+    <script>
+      // The header bar shows a hairline once the page has scrolled under it.
+      const root = document.documentElement;
+      const mark = () => root.classList.toggle('scrolled', window.scrollY > 4);
+      mark();
+      window.addEventListener('scroll', mark, { passive: true });
+
+      // On a narrow screen the nav wraps under the name. Let the name row scroll away
+      // and keep only the nav row pinned, so the strip stays thin.
+      const bar = document.querySelector<HTMLElement>('.site-bar')!;
+      const nav = bar.querySelector<HTMLElement>('.site-nav')!;
+      const name = bar.querySelector<HTMLElement>('.site-name')!;
+      const fit = () => {
+        const wrapped = nav.offsetTop > name.offsetTop + name.offsetHeight / 2;
+        const hide = wrapped ? nav.offsetTop : 0;
+        bar.style.top = `${-hide}px`;
+        root.style.scrollPaddingTop = `${bar.offsetHeight - hide + 12}px`;
+      };
+      fit();
+      window.addEventListener('resize', fit);
+    </script>
   </body>
 </html>

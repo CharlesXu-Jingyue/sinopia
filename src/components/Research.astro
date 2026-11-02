@@ -77,7 +77,7 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
       <section class="group">
         <div class="ghead">
           <h3>{g.heading}</h3>
-          {g.id && <button class="ctl plain" type="button" data-open={g.id}>Open its block ↑</button>}
+          {g.id && <button class="ctl plain" type="button" data-open={g.id}>Open its giornata ↑</button>}
         </div>
         {g.items.length === 0 && <p class="muted empty">Nothing here yet.</p>}
         {g.items.map((w) => (
