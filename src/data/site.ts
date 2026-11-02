@@ -26,7 +26,7 @@ export const site = {
       origin: 'From Greek kybernḗtēs, “steersman”; named by Norbert Wiener in 1948.',
     },
     paragraphs: [
-      'Cybernetics treats a mind less as a thing than as a loop: it acts on the world, senses the consequences of its actions, and corrects itself in turn. The brain thereby becomes something that can be modeled, perturbed and, in principle, rebuilt; to understand it is to rewire the loop and observe what changes. Beneath this fresco lies the work that follows from that idea.',
+      'Cybernetics treats a mind less as a thing than as a loop: it acts on the world, senses the consequences of its actions, and corrects itself in turn. The brain thereby becomes something that can be modelled, perturbed and, in principle, rebuilt; to understand it is to rewire the loop and observe what changes.',
     ],
   },
 };
