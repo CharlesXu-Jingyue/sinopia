@@ -18,21 +18,38 @@ const transactions = defineCollection({
 });
 
 /**
- * Works: what lies beneath. Each work belongs to one giornata of the fresco.
- * `href` overrides the default page (use it for external papers, repositories or toy models).
+ * Works: what lies beneath the fresco. One Markdown file per item in src/content/works/.
+ * Every item carries three labels (category, date, giornata) and a one-to-two sentence
+ * description of its role: how it fits the investigation of the mind named in the headline.
+ * Every item gets its own page at /works/<file name>. The Markdown body (optional) is shown there.
  */
 const works = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/works' }),
   schema: z.object({
     title: z.string(),
-    giornata: z.enum(['neuroscience', 'mathematics', 'engineering', 'cybernetics']),
-    kind: z.enum(['publication', 'toy model', 'analysis', 'talk', 'note', 'build', 'code', 'simulation', 'essay', 'reading notes']),
+    category: z.enum(['publication', 'talk', 'toy model', 'simulation', 'build', 'code', 'analysis', 'note', 'essay', 'reading notes']),
     date: z.coerce.date(),
-    summary: z.string(),
+    giornata: z.enum(['neuroscience', 'mathematics', 'engineering', 'cybernetics']),
+    /** Its role in relation to the fresco and the headline. One or two sentences. */
+    description: z.string(),
+    /** An external page or a toy model, offered as a button on the item's page. */
+    link: z.string().optional(),
+    /** Shown in its giornata's block when the plaster is lifted. Keep to about one per giornata. */
+    featured: z.boolean().default(false),
+    /** Short label for the card's picture space in the block, until a real preview exists. */
     thumb: z.string().optional(),
-    href: z.string().optional(),
-    featured: z.boolean().default(true),
     draft: z.boolean().default(false),
+
+    /* Publications only. The APA reference is generated from these fields. */
+    authors: z.array(z.string()).optional(),
+    venue: z.string().optional(),
+    volume: z.string().optional(),
+    issue: z.string().optional(),
+    pages: z.string().optional(),
+    /** Preprint, in press, published, and so on; shown beside the venue. */
+    status: z.string().optional(),
+    doi: z.string().optional(),
+    abstract: z.string().optional(),
   }),
 });
 

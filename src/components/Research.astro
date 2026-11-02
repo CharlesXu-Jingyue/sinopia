@@ -2,7 +2,7 @@
 /**
  * The research glossary: every work in one column, revealed when the whole fresco is lifted.
  * Three arrangements of the same list: by category (default, publications first),
- * by giornata, or by date. All three are rendered at build time; a small script switches them.
+ * by giornata, or by year. All three are rendered at build time; a small script switches them.
  */
 import { getCollection } from 'astro:content';
 import { giornate } from '../data/giornate';
@@ -28,7 +28,7 @@ const categories: [string, string][] = [
 const giornataName = (id: string) => giornate.find((g) => g.id === id)?.name ?? id;
 
 const byCategory = categories
-  .map(([kind, heading]) => ({ heading, items: works.filter((w) => w.data.kind === kind) }))
+  .map(([kind, heading]) => ({ heading, items: works.filter((w) => w.data.category === kind) }))
   .filter((g) => g.items.length > 0);
 
 const byGiornata = giornate
@@ -38,7 +38,7 @@ const byGiornata = giornate
 const years = [...new Set(works.map((w) => w.data.date.getFullYear()))].sort((a, b) => b - a);
 const byDate = years.map((y) => ({ heading: String(y), items: works.filter((w) => w.data.date.getFullYear() === y) }));
 
-const href = (w: (typeof works)[number]) => url(w.data.href ?? `/works/${w.id}`);
+const href = (w: (typeof works)[number]) => url(`/works/${w.id}`);
 const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
 ---
 <section id="research-glossary" class="research">
@@ -51,7 +51,7 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
     <span class="muted">Arrange by</span>
     <button type="button" data-arrange="category" aria-pressed="true">Category</button>
     <button type="button" data-arrange="giornata" aria-pressed="false">Giornata</button>
-    <button type="button" data-arrange="date" aria-pressed="false">Date</button>
+    <button type="button" data-arrange="date" aria-pressed="false">Year</button>
   </div>
 
   <div class="list" data-arrangement="category">
@@ -60,7 +60,7 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
         <h3>{g.heading}</h3>
         {g.items.map((w) => (
           <a class="item" href={href(w)}>
-            <span class="t">{w.data.title}</span>
+            <span class="t">{w.data.title}<span class="d">{w.data.description}</span></span>
             <span class="meta">{giornataName(w.data.giornata)}</span>
             <span class="y">{w.data.date.getFullYear()}</span>
           </a>
@@ -79,8 +79,8 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
         {g.items.length === 0 && <p class="muted empty">Nothing here yet.</p>}
         {g.items.map((w) => (
           <a class="item" href={href(w)}>
-            <span class="t">{w.data.title}</span>
-            <span class="meta">{w.data.kind}</span>
+            <span class="t">{w.data.title}<span class="d">{w.data.description}</span></span>
+            <span class="meta">{w.data.category}</span>
             <span class="y">{w.data.date.getFullYear()}</span>
           </a>
         ))}
@@ -94,8 +94,8 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
         <h3>{g.heading}</h3>
         {g.items.map((w) => (
           <a class="item" href={href(w)}>
-            <span class="t">{w.data.title}</span>
-            <span class="meta">{w.data.kind} · {giornataName(w.data.giornata)}</span>
+            <span class="t">{w.data.title}<span class="d">{w.data.description}</span></span>
+            <span class="meta">{w.data.category} · {giornataName(w.data.giornata)}</span>
             <span class="y">{month(w.data.date)}</span>
           </a>
         ))}
@@ -118,7 +118,8 @@ const month = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short' });
   h3 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: 28px; }
   .item { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 24px; padding: 12px 6px; margin: 0 -6px; border-top: 1px solid rgba(42, 36, 32, 0.16); text-decoration: none; transition: background-color .25s ease; }
   .item:hover { background-color: rgba(42, 36, 32, 0.04); }
-  .t { flex: 1 1 360px; min-width: 0; font-size: 19px; line-height: 1.4; }
+  .t { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 19px; line-height: 1.4; }
+  .d { font-size: 15.5px; line-height: 1.5; color: var(--ink-soft); }
   .meta { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sinopia); }
   .y { flex: 0 0 52px; text-align: right; font-size: 15px; font-style: italic; color: var(--ink-soft); }
   .empty { margin: 0; padding: 12px 0; border-top: 1px solid rgba(42, 36, 32, 0.16); }

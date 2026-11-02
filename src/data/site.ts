@@ -6,6 +6,9 @@ export const site = {
     'Jingyue (Charles) Xu: a fresco of ideas on the surface, and the research in neuroscience, mathematics, engineering and cybernetics beneath it.',
   email: 'charlesxu@caltech.edu',
   github: 'https://github.com/CharlesXu-Jingyue',
+  scholar: 'https://scholar.google.com/citations?user=PVuFimUAAAAJ&hl=en',
+  /** Spellings of your name in author lists; each is highlighted on publication pages. */
+  nameInAuthorLists: ['Jingyue Xu', 'Jingyue (Charles) Xu', 'Charles Xu'],
   affiliation: 'PhD candidate, Computation and Neural Systems, Caltech',
   cvPdf: '/cv.pdf', // relative to the site; wrapped with url() where used
   /**

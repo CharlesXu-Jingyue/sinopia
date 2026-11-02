@@ -46,8 +46,13 @@ img { max-width: 100%; display: block; }
 .row:hover { background-color: rgba(42, 36, 32, 0.04); }
 
 /* Footer */
-.site-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; padding: 24px 0 40px; border-top: 1px solid var(--ink); font-size: 17px; }
-.site-foot div { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+/* Footer: a thin strip that floats over the bottom of the page. */
+body { padding-bottom: 64px; }
+.site-foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(233, 226, 212, 0.88); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-top: 1px solid rgba(42, 36, 32, 0.25); }
+.foot-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 28px; min-height: 48px; font-size: 15px; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 0 22px; }
+.foot-links a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (max-width: 640px) { .affil { display: none; } .foot-inner { justify-content: center; } }
 
 /* Long-form reading pages */
 .prose { max-width: var(--measure); margin: 0 auto; font-size: 21px; line-height: 1.75; }

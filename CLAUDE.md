@@ -10,7 +10,7 @@ The whole design rests on one metaphor from fresco painting:
 
 - **The fresco (surface)** is the first thing a visitor meets: a single Renaissance-style fresco of scholars at work, followed by the central idea and the **Transactions** (literary theses and philosophical essays). This is the polished, consolidated layer.
 - **The sinopia (beneath)** is the red-earth underdrawing a fresco painter made on the rough plaster before painting. Here it holds the working research: neuroscience, mathematics, engineering, cybernetics, plus Vita (introduction, CV, journal notes).
-- The fresco is divided into five **giornate** (day-patches of plaster). Clicking a giornata fades its plaster away to reveal the sinopia beneath it and opens that topic's block under the fresco. "Lift the whole fresco" (or Research in the header) reveals the whole sinopia and flips the surface text to the **research glossary**, a list of all works grouped by giornata.
+- The fresco is divided into five **giornate** (day-patches of plaster). Clicking a giornata fades its plaster away to reveal the sinopia beneath it and opens that topic's block under the fresco. "Lift the whole fresco" (or Research in the header) reveals the whole sinopia and flips the surface text to the **research glossary**, a one-column list of all works, arranged by category, giornata or year.
 
 The five giornate, left to right:
 
@@ -51,8 +51,9 @@ public/images/fresco.webp, sinopia.webp   the paired images (sinopia is register
 ## Common tasks
 
 - **Add an essay or thesis:** new Markdown file in `src/content/transactions/` with `title`, `kind`, `date`, `summary`.
-- **Add a work:** new file in `src/content/works/` with `title`, `giornata`, `kind`, `date`, `summary`, optional `thumb` (a short placeholder label or later an image path), optional `href` (external link or a toy page). `featured: false` keeps it out of the giornata block but still lists it in the glossary.
-- **Add a toy model:** a page under `src/pages/toys/`, self-contained like `homeostat.astro`, plus a work entry with `kind: toy model` and `href` pointing to it.
+- **Add a work:** new file in `src/content/works/` with `title`, `category` (publication, talk, toy model, simulation, build, code, analysis, note, essay, reading notes), `date`, `giornata`, and `description` (one or two sentences on its role in the investigation of the mind named in the headline). Optional: `link` (external page or toy), `featured: true` (shown in its giornata's block; keep about one per giornata), `thumb`, Markdown body (shown on its own page at `/works/<file name>`).
+- **Add a publication:** a work with `category: publication` plus `authors` (full names, in order), `venue`, `status`, `doi`, `abstract`, and optionally `volume`, `issue`, `pages`. The item page highlights Charles's name (names listed in `site.nameInAuthorLists`) and generates the APA reference (`src/data/apa.ts`).
+- **Add a toy model:** a page under `src/pages/toys/`, self-contained like `homeostat.astro`, plus a work entry with `category: toy model` and `link` pointing to it.
 - **Replace the fresco images:** keep the same composition; export both at higher resolution, register the sinopia to the fresco (see below), save as `public/images/fresco.webp` and `sinopia.webp`. If the pixel size changes, scale all polygon and seam points in `giornate.ts` by the same factor and update `IMAGE`.
 - **Register the sinopia to the fresco:** the sinopia must line up with the fresco or lifted patches look misaligned. Use OpenCV `findTransformECC` (affine) on blurred gradient-magnitude images of both, then `warpAffine` the sinopia. Check with a checkerboard strip comparison.
 - **Redraw a seam:** seams must follow the outlines of figure groups and never cut through a face, a hand or a key object. Neighbouring polygons share their edge points exactly; the five polygons tile the whole image.

@@ -45,13 +45,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </nav>
       </header>
       <slot />
-      <footer class="site-foot">
-        <span>{site.affiliation}</span>
-        <div>
+    </div>
+    <footer class="site-foot">
+      <div class="wrap foot-inner">
+        <span class="affil">{site.affiliation}</span>
+        <div class="foot-links">
           <a href={`mailto:${site.email}`}>{site.email}</a>
           <a href={site.github}>GitHub</a>
+          <a href={site.scholar}>Google Scholar</a>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   </body>
 </html>
